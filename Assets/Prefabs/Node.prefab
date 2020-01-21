@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalMaterial: {fileID: 2100000, guid: 24b38188f7c364ce5aa7827a2c19144c, type: 2}
   highlightedMaterial: {fileID: 2100000, guid: 5ae0abe180a5c4e60967c1c09e3a0fd4, type: 2}
+  collection: {fileID: 11400000, guid: 990aa541a677141d3a2df3ed10608e07, type: 2}
 --- !u!114 &5128704458076246323
 MonoBehaviour:
   m_ObjectHideFlags: 0
