@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Grid/Geometry/Quad")]
-public class QuadGridGeometry : GridGeometry
+[CreateAssetMenu(fileName = "QuadGridGeometry.asset", menuName = "Grid/QuadGeometry")]
+public sealed class QuadGridGeometry : GridGeometry
 {
     public Vector2 unitA = new Vector2(1, 0);
     public Vector2 unitB = new Vector2(0, 1);

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Highlighter : MonoBehaviour
+public sealed class Highlighter : MonoBehaviour
 {
     public Material normalMaterial;
     public Material highlightedMaterial;
 
-    private MeshRenderer[] _renderers;
+    private MeshRenderer[] _renderers = {};
     private bool _highlighted;
     private Material _lastMaterial;
 

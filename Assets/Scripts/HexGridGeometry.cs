@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Grid/Geometry/Hex")]
-public class HexGridGeometry : GridGeometry
+[CreateAssetMenu(fileName = "HexGridGeometry.asset", menuName = "Grid/HexGeometry")]
+public sealed class HexGridGeometry : GridGeometry
 {
     public double unit = 1;
     private double W => unit * Math.Sqrt(3.0);

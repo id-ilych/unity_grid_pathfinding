@@ -1,26 +1,37 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
 using UnityEngine;
 
-public class GridComponent : MonoBehaviour
+public sealed class GridComponent : MonoBehaviour
 {
-    public GridSize size;
-    public GridGeometry geometry;
-    public GameObject nodePrefab;
-    public GameObject connectionPrefab;
+    [SerializeField]
+    private GridSize size;
+    [SerializeField]
+    private GameObject nodePrefab;
+    [SerializeField]
+    private GameObject connectionPrefab;
+    [SerializeField]
+    private GridGeometryReference geometry;
 
     private Camera _camera;
     private GridNodesData<Highlighter> _highlighters;
-    private GridPosition _lastTarget = new GridPosition(0, 0);
+    private GridPosition _target = new GridPosition(0, 0);
+    private GridGeometry _geometry;
     
     void Start()
     {
         _camera = Camera.main;
-        var nodes = CreateNodes();
-        CreateConnections(nodes);
-        _highlighters = nodes.Transform(go => go.GetComponent<Highlighter>());
-        _highlighters[_lastTarget].ToggleHighlight(true);
+        _geometry = geometry.Value;
+        Reset();
+        geometry.AddListener(OnGeometryChanged);
+    }
+
+    private void OnDestroy()
+    {
+        geometry.RemoveListener(OnGeometryChanged);
     }
 
     void Update()
@@ -31,8 +42,7 @@ public class GridComponent : MonoBehaviour
         }
 
         var ray = _camera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (!Physics.Raycast(ray, out hit))
+        if (!Physics.Raycast(ray, out var hit))
         {
             return;
         }
@@ -42,17 +52,40 @@ public class GridComponent : MonoBehaviour
         {
             return;
         }
-        Debug.Log($"OnNodeTouched {node.Position.a}, {node.Position.b}");
-        var from = _lastTarget;
-        _lastTarget = node.Position;
-        DrawPath(from, _lastTarget);
+        var from = _target;
+        _target = node.Position;
+        DrawPath(from, _target);
+    }
+
+    private void OnGeometryChanged()
+    {
+        _geometry = geometry.Value;
+        Reset();
+    }
+
+    private void Reset()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (_geometry == null)
+        {
+            return;
+        }
+        
+        var nodes = CreateNodes();
+        CreateConnections(nodes);
+        _highlighters = nodes.Transform(go => go.GetComponent<Highlighter>());
+        _highlighters[_target].ToggleHighlight(true);
     }
 
     private void DrawPath(GridPosition from, GridPosition to)
     {
-        var pathArr = GridPathfinder.FindPath(from, to, geometry, size);
+        var pathArr = GridPathfinder.FindPath(from, to, _geometry, size);
         var pathSet = new HashSet<GridPosition>(pathArr);
-        foreach (var pos in geometry.AllNodes(size))
+        foreach (var pos in _geometry.AllNodes(size))
         {
             var highlighter = _highlighters[pos];
             var highlighted = pathSet.Contains(pos);
@@ -63,9 +96,9 @@ public class GridComponent : MonoBehaviour
     private GridNodesData<GameObject> CreateNodes()
     {
         var result = new GridNodesData<GameObject>(size);
-        foreach (var pos in geometry.AllNodes(size))
+        foreach (var pos in _geometry.AllNodes(size))
         {
-            var coords = geometry.PositionCoordinates(pos);
+            var coords = _geometry.PositionCoordinates(pos);
             var vec = new Vector3(coords.x, coords.y, 0);
             var node = Instantiate(nodePrefab, vec, Quaternion.identity, transform);
             result[pos] = node;
@@ -76,9 +109,9 @@ public class GridComponent : MonoBehaviour
 
     private void CreateConnections(GridNodesData<GameObject> nodes)
     {
-        foreach (var (f, t) in geometry.AllConnections(size))
+        foreach (var (f, t) in _geometry.AllConnections(size))
         {
-            var from = geometry.PositionCoordinates(f);
+            var from = _geometry.PositionCoordinates(f);
             var connection = Instantiate(connectionPrefab, from, Quaternion.identity, transform);
             connection.transform.LookAt(nodes[t].transform);
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridNode : MonoBehaviour
+public sealed class GridNode : MonoBehaviour
 {
     private GridComponent _grid;
     private GridPosition _position;

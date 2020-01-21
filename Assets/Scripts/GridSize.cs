@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Grid/Size")]
-public class GridSize : ScriptableObject
+public sealed class GridSize : ScriptableObject
 {
     public int minA;
     public int minB;

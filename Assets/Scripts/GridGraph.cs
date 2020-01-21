@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class GridGraph
+public sealed class GridGraph
 {
     private readonly GridSize _gridSize;
     private readonly bool[,] _data;

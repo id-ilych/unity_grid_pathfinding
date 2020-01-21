@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class GridNodesData<T>
+public sealed class GridNodesData<T>
 {
     private readonly GridSize _gridSize;
 
